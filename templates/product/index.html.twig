@@ -3,7 +3,7 @@
 {% block title %}Product{% endblock %}
 
 {% block body %}
-<link href="{{ asset('assets/css/product.css') }}" rel="stylesheet"/>
+<link href="{{ asset('assets/css/product.css') }}" rel="stylesheet" />
 
 <div class="container">
   <div class="table-container">
@@ -13,14 +13,16 @@
         <th>name</th>
         <th>code</th>
         <th>stock</th>
+        <th>price</th>
         <th>action</th>
       </tr>
       {% for value in dataProducts %}
-      <tr>
-        <td>{{ value.id }}</td>
-        <td>{{ value.name }}</td>
-        <td>{{ value.code }}</td>
-        <td>{{ value.stock }}</td>
+      <tr class="row-data">
+        <td class="id">{{ value.id }}</td>
+        <td class="name-data">{{ value.name }}</td>
+        <td class="code-data">{{ value.code }}</td>
+        <td class="stock-data">{{ value.stock }}</td>
+        <td class="price-data">{{ value.price }}</td>
         <td class="action">
           <div class="btn-action btn-update">update</div>
           <div class="btn-action btn-delete">delete</div>
@@ -32,6 +34,7 @@
         <td><input name="name" placeholder="name ..."></td>
         <td><input name="code" placeholder="code ..."></td>
         <td><input name="stock" placeholder="stock ..." type="number" min="0"></td>
+        <td><input name="price" placeholder="price ..." type="number" min="0" step="0.1"></td>
         <td class="action">
           <div class="btn-action btn-save">save</div>
         </td>
@@ -43,7 +46,71 @@
 <script src="{{ asset('assets/js/jquery-3.7.0.js') }}"></script>
 <script>
   $(document).on('click', '.btn-save', function() {
-    alert('hi');
+    $.ajax({
+      url: "{{ path('api_create_product') }}",
+      method: 'POST',
+      data: {
+        'name': $('input[name=name]').val(),
+        'code': $('input[name=code]').val(),
+        'stock': $('input[name=stock]').val(),
+        'price': $('input[name=price]').val(),
+      },
+      success: function(s) {
+        alert(s.message);
+        window.location.href = "{{path('index_product')}}";
+      },
+      error: function(e) {
+        alert(e.responseJSON.message);
+      }
+    });
+  });
+
+  $(document).on('click', '.name-data,.code-data,.stock-data,.price-data', function() {
+    var previousValue = $(this).text();
+    var inputElement = $('<input>').attr('placeholder', previousValue);
+    var className = $(this).attr('class').replace('-data', '-input');
+    var tdElement = $('<td>').addClass(className).append(inputElement);
+    $(this).replaceWith(tdElement);
+  });
+
+  $(document).on('click', '.btn-update', function() {
+    let id = $(this).closest('.row-data').find('.id').text();
+    let name = $(this).closest('.row-data').find('.name-input input').val() || $(this).closest('.row-data').find('.name-data').text();
+    let code = $(this).closest('.row-data').find('.code-input input').val() || $(this).closest('.row-data').find('.code-data').text();
+    let stock = $(this).closest('.row-data').find('.stock-input input').val() || $(this).closest('.row-data').find('.stock-data').text();
+    let price = $(this).closest('.row-data').find('.price-input input').val() || $(this).closest('.row-data').find('.price-data').text();
+    data = {
+      "name": name,
+      "code": code,
+      "stock": stock,
+      "price": price
+    }
+    $.ajax({
+      url: '/api/product/' + id,
+      method: 'PUT',
+      data: JSON.stringify(data),
+      success: function(s) {
+        alert(s.message);
+      },
+      error: function(e) {
+        alert(e.responseJSON.message);
+      }
+    });
+  });
+
+  $(document).on('click', '.btn-delete', function() {
+    let id = $(this).closest('.row-data').find('.id').text();
+    $.ajax({
+      url: '/api/product/' + id,
+      method: 'DELETE',
+      success: function(s) {
+        alert(s.message);
+        window.location.href = "{{path('index_product')}}";
+      },
+      error: function(e) {
+        alert(e.responseJSON.message);
+      }
+    });
   });
 </script>
 {% endblock %}
