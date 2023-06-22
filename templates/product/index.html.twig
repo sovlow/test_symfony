@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product{% endblock %}
+
+{% block body %}
+<link href="{{ asset('assets/css/product.css') }}" rel="stylesheet"/>
+
+<div class="container">
+  <div class="table-container">
+    <table id="table-product">
+      <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>code</th>
+        <th>stock</th>
+        <th>action</th>
+      </tr>
+      {% for value in dataProducts %}
+      <tr>
+        <td>{{ value.id }}</td>
+        <td>{{ value.name }}</td>
+        <td>{{ value.code }}</td>
+        <td>{{ value.stock }}</td>
+        <td class="action">
+          <div class="btn-action btn-update">update</div>
+          <div class="btn-action btn-delete">delete</div>
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td>...</td>
+        <td><input name="name" placeholder="name ..."></td>
+        <td><input name="code" placeholder="code ..."></td>
+        <td><input name="stock" placeholder="stock ..." type="number" min="0"></td>
+        <td class="action">
+          <div class="btn-action btn-save">save</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<script src="{{ asset('assets/js/jquery-3.7.0.js') }}"></script>
+<script>
+  $(document).on('click', '.btn-save', function() {
+    alert('hi');
+  });
+</script>
+{% endblock %}
